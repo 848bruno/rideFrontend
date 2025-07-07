@@ -1,48 +1,77 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import "./styles.css";
 
-import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
+import { createRoot } from "react-dom/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/contexts/AuthContext";
 
-// Import the generated route tree
-import { routeTree } from './routeTree.gen'
+import { BottomNavigation } from "@/components/BottomNavigation";
+import { ModernNavigation } from "./components/Header";
 
-import './styles.css'
-import reportWebVitals from './reportWebVitals.ts'
+import { RouterProvider, createRouter, useRouter } from "@tanstack/react-router";
+import { routeTree } from "./routeTree.gen";
 
-// Create a new router instance
+// Create QueryClient
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+// Create Router
 const router = createRouter({
   routeTree,
-  context: {
-    ...TanStackQueryProvider.getContext(),
-  },
-  defaultPreload: 'intent',
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
+  context: { queryClient },
+  defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
-})
+});
 
-// Register the router instance for type safety
-declare module '@tanstack/react-router' {
+// Register router types
+declare module "@tanstack/react-router" {
   interface Register {
-    router: typeof router
+    router: typeof router;
   }
 }
 
-// Render the app
-const rootElement = document.getElementById('app')
-if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <TanStackQueryProvider.Provider>
-        <RouterProvider router={router} />
-      </TanStackQueryProvider.Provider>
-    </StrictMode>,
-  )
+// Inner Layout that uses useRouter (now safe)
+function AppLayout() {
+  const router = useRouter();
+  const location = router.state.location;
+
+  const showBottomNav = !["/", "/driver-dashboard", "/admin-dashboard"].includes(location.pathname);
+  const showTopNav = true;
+
+  return (
+    <div className="min-h-screen bg-background">
+      {showTopNav && <ModernNavigation />}
+      <main className={showTopNav ? "pt-0" : ""}>
+        {/* TanStack Router handles route outlet automatically */}
+      </main>
+      {showBottomNav && <BottomNavigation />}
+    </div>
+  );
 }
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals()
+// Full App wrapped properly
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <ThemeProvider defaultTheme="system" storageKey="rideflow-theme">
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </TooltipProvider>
+    </ThemeProvider>
+  </QueryClientProvider>
+);
+
+// Mount App to DOM
+createRoot(document.getElementById("root")!).render(<App />);
