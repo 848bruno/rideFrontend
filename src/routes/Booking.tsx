@@ -17,13 +17,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+
 import { ridesService } from "@/lib/rides-service";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute('/Booking')({
+  component: Booking,
+})
 
 export default function Booking() {
-  const navigate = useNavigate();
+  const navigate = useRouter();
   const { user } = useAuth();
   const [ride, setRide] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +47,7 @@ export default function Booking() {
           description: "No active ride found. Redirecting...",
           variant: "destructive",
         });
-        navigate("/app");
+        navigate("/index");
         return;
       }
 
@@ -61,7 +66,7 @@ export default function Booking() {
         description: "Unable to load ride details. Please try again.",
         variant: "destructive",
       });
-      navigate("/app");
+      navigate("/index");
     } finally {
       setIsLoading(false);
     }
@@ -156,7 +161,7 @@ export default function Booking() {
         <div className="text-center">
           <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">No active ride found</p>
-          <Button onClick={() => navigate("/app")} className="mt-4">
+          <Button onClick={() => navigate("/index")} className="mt-4">
             Book a New Ride
           </Button>
         </div>
@@ -169,7 +174,7 @@ export default function Booking() {
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/app")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate("/index")}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>

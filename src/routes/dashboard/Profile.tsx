@@ -1,6 +1,5 @@
 import {
   ArrowLeft,
-  User,
   Star,
   CreditCard,
   Settings,
@@ -10,31 +9,36 @@ import {
   MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
+import { useAuth } from "@/contexts/AuthContext";
+
+export const Route = createFileRoute('/dashboard/Profile')({
+  component: Profile,
+})
+
 
 export default function Profile() {
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
+  const { user } = useAuth();
 
-  const mockUser = {
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    phone: "+1 (555) 123-4567",
-    rating: 4.8,
-    trips: 47,
-    memberSince: "March 2023",
-    image: "/placeholder.svg",
-  };
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-muted-foreground">You are not logged in.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/app")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/index" })}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
@@ -50,31 +54,33 @@ export default function Profile() {
           <CardContent className="p-6">
             <div className="flex items-center gap-4 mb-4">
               <Avatar className="w-20 h-20">
-                <AvatarImage src={mockUser.image} />
+                <AvatarImage src={user.avatar || "/placeholder.svg"} />
                 <AvatarFallback>
-                  {mockUser.name
-                    .split(" ")
+                  {user.username
+                    ?.split(" ")
                     .map((n) => n[0])
-                    .join("")}
+                    .join("") || "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <h2 className="text-xl font-semibold">{mockUser.name}</h2>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {mockUser.email}
-                </p>
+                <h2 className="text-xl font-semibold">{user.username}</h2>
+                <p className="text-sm text-muted-foreground mb-2">{user.email}</p>
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                    <span className="text-sm font-medium">
-                      {mockUser.rating}
-                    </span>
+                    <span className="text-sm font-medium">{user.rating || 4.8}</span>
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    {mockUser.trips} trips
+                    {user.totalTrips || 0} trips
                   </Badge>
                   <span className="text-xs text-muted-foreground">
-                    Member since {mockUser.memberSince}
+                    Member since{" "}
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                        })
+                      : "2024"}
                   </span>
                 </div>
               </div>
@@ -89,7 +95,9 @@ export default function Profile() {
         <div className="grid grid-cols-3 gap-4 mb-6">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary">47</div>
+              <div className="text-2xl font-bold text-primary">
+                {user.totalTrips || 0}
+              </div>
               <div className="text-xs text-muted-foreground">Total Trips</div>
             </CardContent>
           </Card>
@@ -101,7 +109,9 @@ export default function Profile() {
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">4.8</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {user.rating || 4.8}
+              </div>
               <div className="text-xs text-muted-foreground">Rating</div>
             </CardContent>
           </Card>

@@ -43,7 +43,7 @@ export function AuthDialog({
   open,
   onOpenChange,
   defaultTab = "signin",
-  defaultRole = "",
+  defaultRole = "customer",
 }: AuthDialogProps) {
   const router = useRouter();
   const authContext = useContext(AuthContext);
@@ -59,6 +59,8 @@ export function AuthDialog({
     confirmPassword: "",
     name: "",
     phone: "",
+    createdAt: "",
+    updatedAt: "",
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -86,20 +88,20 @@ export function AuthDialog({
 
     setIsLoading(true);
     try {
-      // Use the context login method instead of calling authService directly
       if (!authContext?.login) {
         throw new Error("Authentication context not available");
       }
 
+      // Perform login (assume it returns void and updates context)
       await authContext.login(formData.email, formData.password);
 
-      // Get the user from context after login
+      // Get user from context after login
       const user = authContext.user;
+
       if (!user) {
-        throw new Error("Login failed - no user data");
+        throw new Error("Login succeeded but no user data available");
       }
 
-      // Check role match if specified
       if (userRole && user.role !== userRole) {
         toast({
           title: "Role Mismatch",
@@ -116,11 +118,8 @@ export function AuthDialog({
       });
 
       onOpenChange(false);
-
-      // Set flag to indicate successful login for redirect
       sessionStorage.setItem("justLoggedIn", "true");
 
-      // Use a slight delay to ensure context state is updated
       setTimeout(() => {
         const redirectPath = authService.getRedirectPath(user.role);
         router.navigate({ to: redirectPath });
@@ -178,23 +177,21 @@ export function AuthDialog({
 
     setIsLoading(true);
     try {
-      // Use the context register method
       if (!authContext?.register) {
         throw new Error("Authentication context not available");
       }
 
-      await authContext.register({
+      // Get user data directly from the registration response
+      let user = await authContext.register({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         phone: formData.phone,
         role: userRole,
-      });
+      }) ?? authContext.user;
 
-      // Get the user from context after registration
-      const user = authContext.user;
       if (!user) {
-        throw new Error("Registration failed - no user data");
+        throw new Error("Registration succeeded but no user data available");
       }
 
       toast({
@@ -203,11 +200,8 @@ export function AuthDialog({
       });
 
       onOpenChange(false);
-
-      // Set flag to indicate successful registration for redirect
       sessionStorage.setItem("justLoggedIn", "true");
 
-      // Use a slight delay to ensure context state is updated
       setTimeout(() => {
         const redirectPath = authService.getRedirectPath(user.role);
         router.navigate({ to: redirectPath });

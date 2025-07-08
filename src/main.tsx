@@ -44,7 +44,7 @@ function AppLayout() {
   const router = useRouter();
   const location = router.state.location;
 
-  const showBottomNav = !["/", "/driver-dashboard", "/admin-dashboard"].includes(location.pathname);
+  const showBottomNav = !["/", "/pages/DriverDashboard", "/pages/AdminDashboard"].includes(location.pathname);
   const showTopNav = true;
 
   return (

@@ -8,24 +8,32 @@ import {
   Camera,
   FileText,
   DollarSign,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { useNavigate } from "react-router-dom";
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/Delivery')({
+  component: Delivery,
+})
 
 export default function Delivery() {
-  const navigate = useNavigate();
+  const { navigate } = useRouter()
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/app")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate({ to: '/index' })}
+          >
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
@@ -219,7 +227,12 @@ export default function Delivery() {
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => navigate("/?type=customer&action=signup")}
+            onClick={() =>
+              navigate({
+                to: '/',
+                search: { type: 'customer', action: 'signup' },
+              })
+            }
           >
             New User? Sign Up for Delivery
           </Button>
@@ -232,5 +245,5 @@ export default function Delivery() {
         </div>
       </div>
     </div>
-  );
+  )
 }

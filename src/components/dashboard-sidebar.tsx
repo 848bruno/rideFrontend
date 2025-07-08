@@ -41,40 +41,40 @@ interface DashboardSidebarProps {
 
 const sidebarItems = {
   customer: [
-    { icon: Home, label: "Dashboard", href: "/app" },
-    { icon: Car, label: "Book Ride", href: "/app/book" },
-    { icon: Users, label: "Carpool", href: "/app/carpool" },
-    { icon: Package, label: "Delivery", href: "/delivery" },
-    { icon: MapPin, label: "My Trips", href: "/app/trips" },
-    { icon: CreditCard, label: "Payments", href: "/app/payments" },
-    { icon: Star, label: "Reviews", href: "/app/reviews" },
+    { icon: Home, label: "Dashboard", href: "/index" },
+    { icon: Car, label: "Book Ride", href: "/Booking" },
+    { icon: Users, label: "Carpool", href: "/Carpool" },
+    { icon: Package, label: "Delivery", href: "/Delivery" },
+    { icon: MapPin, label: "My Trips", href: "/MyTrips" },
+    { icon: CreditCard, label: "Payments", href: "/Payments" },
+    { icon: Star, label: "Reviews", href: "/Reviews" },
     {
       icon: Bell,
       label: "Notifications",
-      href: "/app/notifications",
+      href: "/notifications",
       badge: "3",
     },
   ],
   driver: [
-    { icon: Home, label: "Dashboard", href: "/driver-dashboard" },
-    { icon: Car, label: "My Rides", href: "/driver-dashboard/rides" },
-    { icon: Route, label: "Routes", href: "/driver-dashboard/routes" },
-    { icon: Truck, label: "Vehicle", href: "/driver-dashboard/vehicle" },
-    { icon: BarChart3, label: "Earnings", href: "/driver-dashboard/earnings" },
-    { icon: Calendar, label: "Schedule", href: "/driver-dashboard/schedule" },
-    { icon: Star, label: "Reviews", href: "/driver-dashboard/reviews" },
+    { icon: Home, label: "Home", href: "/index" },
+    { icon: Car, label: "My Rides", href: "/Rides" },
+    { icon: Route, label: "Routes", href: "/Routes" },
+    { icon: Truck, label: "Vehicle", href: "/Vehicle" },
+    { icon: BarChart3, label: "Earnings", href: "/Earnings" },
+    { icon: Calendar, label: "Schedule", href: "/Schedule" },
+    { icon: Star, label: "Reviews", href: "/Reviews" },
     {
       icon: Bell,
       label: "Notifications",
-      href: "/driver-dashboard/notifications",
+      href: "notifications",
       badge: "5",
     },
   ],
   admin: [
-    { icon: Home, label: "Dashboard", href: "/admin-dashboard" },
-    { icon: Users, label: "Users", href: "/admin-dashboard/users" },
-    { icon: Car, label: "Drivers", href: "/admin-dashboard/drivers" },
-    { icon: Truck, label: "Vehicles", href: "/admin-dashboard/vehicles" },
+    { icon: Home, label: "home", href: "/index" },
+    { icon: Users, label: "Users", href: "/admin/users" },
+    { icon: Car, label: "Drivers", href: "/admin/drivers" },
+    { icon: Truck, label: "Vehicles", href: "/vehicles" },
     { icon: MapPin, label: "Rides", href: "/admin-dashboard/rides" },
     { icon: Package, label: "Deliveries", href: "/admin-dashboard/deliveries" },
     { icon: BarChart3, label: "Analytics", href: "/admin-dashboard/analytics" },
@@ -105,16 +105,14 @@ export function DashboardSidebar({ userType }: DashboardSidebarProps) {
 
   const isActive = (href: string) => {
     const pathname = router.state.location.pathname;
-    if (href === "/app" && pathname === "/app") return true;
-    if (href === "/driver-dashboard" && pathname === "/driver-dashboard")
-      return true;
-    if (href === "/admin-dashboard" && pathname === "/admin-dashboard")
-      return true;
+    if (href === "/index" && pathname === "/index") return true;
+    if (href === "/driver" && pathname === "/driver") return true;
+    if (href === "/admin" && pathname === "/admin") return true;
     return (
       pathname.startsWith(href) &&
-      href !== "/app" &&
-      href !== "/driver-dashboard" &&
-      href !== "/admin-dashboard"
+      href !== "/index" &&
+      href !== "/driver" &&
+      href !== "/admin"
     );
   };
 

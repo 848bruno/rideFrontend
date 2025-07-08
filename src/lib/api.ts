@@ -1,6 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:3001";
+  "https://ridesharingbackend-x2gi.onrender.com";
 
 export interface ApiResponse<T> {
   data?: T;
@@ -53,14 +53,14 @@ export class ApiClient {
   ): Promise<AxiosResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
 
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       "Content-Type": "application/json",
       ...this.defaults.headers.common,
-      ...options.headers,
+      ...(options.headers as Record<string, string>),
     };
 
     if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
+      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
     // Only log in development or when not in demo mode

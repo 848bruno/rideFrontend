@@ -41,7 +41,7 @@ class DashboardService {
   async getAdminStats(): Promise<DashboardStats> {
     try {
       const response = await api.get<ApiResponse<DashboardStats>>(
-        "/admin/dashboard/stats",
+        "/dashboard/admin/stats",
       );
       if (response.data.success) {
         return response.data.data;

@@ -37,25 +37,26 @@ import { useRouter, useLocation } from "@tanstack/react-router";
 const navigationItems = [
   {
     label: "Book Ride",
-    href: "/app",
+    href: "/Booking",
     icon: Car,
     description: "Book instant rides",
   },
   {
     label: "Drive & Earn",
-    href: "/drive",
+    href: "/Drive",
     icon: Car,
     description: "Start earning as a driver",
   },
   {
     label: "Delivery",
-    href: "/delivery",
+    href: "/Delivery",
+
     icon: Package,
     description: "Send packages",
   },
   {
     label: "Driver Hub",
-    href: "/driver-dashboard",
+    href: "/Drive",
     icon: Car,
     description: "Driver dashboard",
   },
@@ -130,7 +131,7 @@ export function ModernNavigation() {
                           "demo-token-customer"
                         );
                       }
-                      router.navigate("/ModernHome");
+                      router.navigate({ to: "/Booking" });
                     }}
                   >
                     <Car className="w-4 h-4 mr-2" />
@@ -146,7 +147,7 @@ export function ModernNavigation() {
                           "demo-token-driver"
                         );
                       }
-                      router.navigate({ to: "/driver-dashboard" });
+                      router.navigate({ to: "/Drive" });
                     }}
                   >
                     <Car className="w-4 h-4 mr-2" />
@@ -162,7 +163,7 @@ export function ModernNavigation() {
                           "demo-token-customer"
                         );
                       }
-                      router.navigate("/delivery");
+                      router.navigate({ to: "/Delivery" });
                     }}
                   >
                     <Package className="w-4 h-4 mr-2" />
@@ -174,7 +175,7 @@ export function ModernNavigation() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.navigate({ to: "/services" })}
+                onClick={() => router.navigate({ to: "/Services" })}
               >
                 <Globe className="w-4 h-4 mr-2" />
                 Services
@@ -182,7 +183,7 @@ export function ModernNavigation() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.navigate({ to: "/contact" })}
+                onClick={() => router.navigate({ to: "/Contact" })}
               >
                 <Phone className="w-4 h-4 mr-2" />
                 Contact

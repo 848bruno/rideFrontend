@@ -46,10 +46,10 @@ export function ProtectedRoute({
       // Redirect to appropriate dashboard based on user role
       switch (authContext.user.role) {
         case "driver":
-          router.navigate({ to: "/driver-dashboard", replace: true });
+          router.navigate({ to: "/pages/DriverDashboard", replace: true });
           break;
         case "admin":
-          router.navigate({ to: "/admin-dashboard", replace: true });
+          router.navigate({ to: "/pages/AdminDashboard", replace: true });
           break;
         default:
           router.navigate({ to: "/app", replace: true });

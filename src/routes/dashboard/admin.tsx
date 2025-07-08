@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { createFileRoute } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
 import {
   Users,
   Car,
@@ -13,13 +14,13 @@ import {
   BarChart3,
   Activity,
   Loader2,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from 'lucide-react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Table,
   TableBody,
@@ -27,10 +28,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { dashboardService } from "@/lib/dashboard-service";
-import { toast } from "@/components/ui/use-toast";
+} from '@/components/ui/table'
+import { DashboardSidebar } from '@/components/dashboard-sidebar'
+import { dashboardService } from '@/lib/dashboard-service'
+import { toast } from '@/components/ui/use-toast'
 import type {
   DashboardStats,
   User,
@@ -38,11 +39,15 @@ import type {
   Ride,
   Booking,
   Notification,
-} from "@/lib/types";
+} from '@/lib/types'
 
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("overview");
-  const [isLoading, setIsLoading] = useState(true);
+export const Route = createFileRoute('/dashboard/admin')({
+  component: Admin,
+})
+
+export default function Admin() {
+  const [activeTab, setActiveTab] = useState('overview')
+  const [isLoading, setIsLoading] = useState(true)
   const [businessMetrics, setBusinessMetrics] = useState<DashboardStats>({
     totalUsers: 0,
     activeDrivers: 0,
@@ -53,18 +58,18 @@ export default function AdminDashboard() {
     completionRate: 0,
     averageRating: 0,
     supportTickets: 0,
-  });
-  const [recentRides, setRecentRides] = useState<Ride[]>([]);
-  const [topDrivers, setTopDrivers] = useState<Driver[]>([]);
-  const [recentUsers, setRecentUsers] = useState<User[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  })
+  const [recentRides, setRecentRides] = useState<Ride[]>([])
+  const [topDrivers, setTopDrivers] = useState<Driver[]>([])
+  const [recentUsers, setRecentUsers] = useState<User[]>([])
+  const [notifications, setNotifications] = useState<Notification[]>([])
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    loadDashboardData()
+  }, [])
 
   const loadDashboardData = async () => {
-    setIsLoading(true);
+    setIsLoading(true)
     try {
       const [stats, rides, drivers, users, notificationsData, recentActivity] =
         await Promise.all([
@@ -74,51 +79,51 @@ export default function AdminDashboard() {
           dashboardService.getAllUsers({ limit: 10, page: 1 }),
           dashboardService.getNotifications({ limit: 10, page: 1 }),
           dashboardService.getRecentActivity(),
-        ]);
+        ])
 
-      setBusinessMetrics(stats);
-      setRecentRides(recentActivity.recentRides);
-      setTopDrivers(drivers.data);
-      setRecentUsers(users.data);
-      setNotifications(notificationsData.data);
+      setBusinessMetrics(stats)
+      setRecentRides(recentActivity.recentRides)
+      setTopDrivers(drivers.data)
+      setRecentUsers(users.data)
+      setNotifications(notificationsData.data)
     } catch (error: any) {
-      console.error("Error loading dashboard data:", error);
+      console.error('Error loading dashboard data:', error)
       toast({
-        title: "Error",
-        description: "Failed to load dashboard data. Please refresh the page.",
-        variant: "destructive",
-      });
+        title: 'Error',
+        description: 'Failed to load dashboard data. Please refresh the page.',
+        variant: 'destructive',
+      })
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "completed":
-      case "confirmed":
-      case "delivered":
-        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
-      case "active":
-      case "in_transit":
-      case "picked_up":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
-      case "cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
+      case 'completed':
+      case 'confirmed':
+      case 'delivered':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+      case 'active':
+      case 'in_transit':
+      case 'picked_up':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'
     }
-  };
+  }
 
   const formatDate = (date: string | Date) => {
-    return new Date(date).toLocaleDateString();
-  };
+    return new Date(date).toLocaleDateString()
+  }
 
   const formatTime = (date: string | Date) => {
-    return new Date(date).toLocaleTimeString();
-  };
+    return new Date(date).toLocaleTimeString()
+  }
 
   if (isLoading) {
     return (
@@ -131,7 +136,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -308,13 +313,13 @@ export default function AdminDashboard() {
                           </span>
                           <Avatar className="w-8 h-8">
                             <AvatarFallback className="text-xs">
-                              {driver.user?.name?.charAt(0) || "D"}
+                              {driver.user?.name?.charAt(0) || 'D'}
                             </AvatarFallback>
                           </Avatar>
                         </div>
                         <div>
                           <p className="font-medium text-sm">
-                            {driver.user?.name || "Driver"}
+                            {driver.user?.name || 'Driver'}
                           </p>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-muted-foreground">
@@ -330,7 +335,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <Badge variant="outline" className="text-xs">
-                        {driver.vehicle?.status || "No vehicle"}
+                        {driver.vehicle?.status || 'No vehicle'}
                       </Badge>
                     </div>
                   ))}
@@ -374,7 +379,7 @@ export default function AdminDashboard() {
                             {ride.id.substring(0, 8)}...
                           </TableCell>
                           <TableCell>
-                            {ride.driver?.user?.name || "Unknown"}
+                            {ride.driver?.user?.name || 'Unknown'}
                           </TableCell>
                           <TableCell className="capitalize">
                             {ride.type}
@@ -432,7 +437,7 @@ export default function AdminDashboard() {
                               {user.role}
                             </Badge>
                           </TableCell>
-                          <TableCell>{user.phone || "N/A"}</TableCell>
+                          <TableCell>{user.phone || 'N/A'}</TableCell>
                           <TableCell className="text-muted-foreground">
                             {formatDate(user.createdAt)}
                           </TableCell>
@@ -485,5 +490,5 @@ export default function AdminDashboard() {
         </div>
       </div>
     </div>
-  );
+  )
 }

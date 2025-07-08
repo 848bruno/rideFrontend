@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+ 
+} from "react";
 import { authService, type User } from "@/lib/auth-service";
 
 interface AuthContextType {
@@ -12,79 +19,59 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
 export { AuthContext };
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Load user on first mount if token is valid
   useEffect(() => {
     initializeAuth();
   }, []);
 
   const initializeAuth = async () => {
+    if (!authService.getToken()) {
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      if (authService.isAuthenticated()) {
-        const currentUser = authService.getCurrentUser();
-        if (currentUser) {
-          setUser(currentUser);
-          // Optionally refresh user data from server
-          try {
-            const freshUser = await authService.getProfile();
-            setUser(freshUser);
-            authService.setCurrentUser(freshUser);
-          } catch (error) {
-            // If token is invalid, clear it
-            authService.logout();
-            authService.clearCurrentUser();
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error initializing auth:", error);
+      const profile = await authService.getProfile();
+      setUser(profile);
+    } catch (err) {
+      console.warn("Auth initialization failed:", err);
+      authService.logout();
     } finally {
       setIsLoading(false);
     }
   };
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await authService.login({ email, password });
-      console.log("Login successful, setting user:", response.user);
-      setUser(response.user);
-      authService.setCurrentUser(response.user);
-      return response;
-    } catch (error: any) {
-      console.error("Login failed in auth context:", error);
-      throw error;
-    }
+    const { user } = await authService.login({ email, password });
+    setUser(user); // Already persisted in service
   };
 
   const register = async (userData: any) => {
-    const response = await authService.register(userData);
-    setUser(response.user);
-    authService.setCurrentUser(response.user);
+    const { user } = await authService.register(userData);
+    setUser(user);
   };
 
   const logout = () => {
     authService.logout();
-    authService.clearCurrentUser();
     setUser(null);
   };
 
   const refreshUser = async () => {
     try {
-      const freshUser = await authService.getProfile();
-      setUser(freshUser);
-      authService.setCurrentUser(freshUser);
-    } catch (error) {
-      console.error("Error refreshing user:", error);
+      const profile = await authService.getProfile();
+      setUser(profile);
+    } catch (err) {
       logout();
     }
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     isAuthenticated: !!user,
     isLoading,
@@ -94,7 +81,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUser,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

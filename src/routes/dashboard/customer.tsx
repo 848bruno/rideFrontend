@@ -1,10 +1,13 @@
-import { MapView } from "@/components/MapView";
-import { BookingPanel } from "@/components/BookingPanel";
-import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { useNavigate } from "react-router-dom";
+import { MapView } from '@/components/MapView'
+import { BookingPanel } from '@/components/BookingPanel'
+import { DashboardSidebar } from '@/components/dashboard-sidebar'
+import { useRouter, createFileRoute } from '@tanstack/react-router'
 
-export default function Index() {
-  const navigate = useNavigate();
+export const Route = createFileRoute('/dashboard/customer')({
+  component: Customer,
+})
+export default function Customer() {
+  const navigate = useRouter()
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -70,7 +73,7 @@ export default function Index() {
 
                 {/* Get Started for new users */}
                 <button
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate('/')}
                   className="w-full p-2 bg-gradient-to-r from-primary to-blue-600 text-white rounded-xl font-medium text-sm hover:shadow-md transition-all"
                 >
                   New User? Get Started →
@@ -88,5 +91,5 @@ export default function Index() {
         </div>
       </div>
     </div>
-  );
+  )
 }

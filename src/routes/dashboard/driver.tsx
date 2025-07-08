@@ -1,3 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router"
 import { useState, useEffect } from "react";
 import {
   Car,
@@ -24,10 +25,14 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DashboardSidebar } from "@/components/dashboard-sidebar";
-import { dashboardService } from "@/lib/dashboard-service";
+import { dashboardService, type DriverDashboardStats } from "@/lib/dashboard-service";
 import { ridesService } from "@/lib/rides-service";
 import { toast } from "@/components/ui/use-toast";
-import type { DriverDashboardStats, Vehicle, Ride } from "@/lib/types";
+import type { Vehicle, Ride } from "@/lib/types";
+
+export const Route = createFileRoute('/dashboard/driver')({
+  component: DriverDashboard,
+})
 
 export default function DriverDashboard() {
   const [isOnline, setIsOnline] = useState(true);
@@ -295,7 +300,7 @@ export default function DriverDashboard() {
                       Today's Earnings
                     </p>
                     <p className="text-2xl font-bold text-green-600">
-                      ${driverStats.todayEarnings.toFixed(2)}
+                      Ksh{driverStats.todayEarnings.toFixed(2)}
                     </p>
                   </div>
                   <DollarSign className="w-8 h-8 text-green-600" />

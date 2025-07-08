@@ -1,17 +1,20 @@
 import { ArrowLeft, Car, DollarSign, Clock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
+import { useRouter, createFileRoute } from "@tanstack/react-router";
 
+export const Route = createFileRoute('/Drive')({
+  component: Drive,
+})
 export default function Drive() {
-  const navigate = useNavigate();
+  const { navigate } = useRouter();
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background border-b border-border">
         <div className="flex items-center gap-4 p-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate("/app")}>
+          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/index" })}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
@@ -87,21 +90,25 @@ export default function Drive() {
           <Button
             className="w-full"
             size="lg"
-            onClick={() => navigate("/?type=driver&action=signup")}
+            onClick={() =>
+              navigate({ to: "/", search: { type: "driver", action: "signup" } })
+            }
           >
             Get Started - Sign Up Now
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => navigate("/?type=driver&action=signin")}
+            onClick={() =>
+              navigate({ to: "/", search: { type: "driver", action: "signin" } })
+            }
           >
             Already a Driver? Sign In
           </Button>
           <Button
             variant="outline"
             className="w-full"
-            onClick={() => navigate("/driver-dashboard")}
+            onClick={() => navigate({ to: "/pages/DriverDashboard" })}
           >
             Demo Driver Dashboard
           </Button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react'
 import {
   MapPin,
   ArrowUpDown,
@@ -9,151 +9,153 @@ import {
   Zap,
   Share2,
   Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { VehicleCard } from "./VehicleCard";
-import { ridesService } from "@/lib/rides-service";
-import { driversService } from "@/lib/drivers-service";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "@tanstack/react-router";
+} from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/badge'
+import { VehicleCard } from './VehicleCard'
+import { ridesService } from '@/lib/rides-service'
+import { driversService } from '@/lib/drivers-service'
+import { useAuth } from '@/contexts/AuthContext'
+import { toast } from '@/components/ui/use-toast'
+import { useRouter, createFileRoute } from '@tanstack/react-router'
+
+
 
 const mockVehicles = [
   {
-    id: "1",
-    type: "Economy",
+    id: '1',
+    type: 'Economy',
     driver: {
-      name: "John Doe",
+      name: 'John Doe',
       rating: 4.9,
-      image: "/placeholder.svg",
+      image: '/placeholder.svg',
       trips: 1247,
     },
     price: 12,
-    estimatedTime: "5 min",
+    estimatedTime: '5 min',
     capacity: 4,
-    features: ["AC", "Music"],
-    vehicleInfo: "Toyota Camry 2020",
+    features: ['AC', 'Music'],
+    vehicleInfo: 'Toyota Camry 2020',
   },
   {
-    id: "2",
-    type: "Premium",
+    id: '2',
+    type: 'Premium',
     driver: {
-      name: "Sarah Wilson",
+      name: 'Sarah Wilson',
       rating: 4.8,
-      image: "/placeholder.svg",
+      image: '/placeholder.svg',
       trips: 892,
     },
     price: 18,
-    estimatedTime: "3 min",
+    estimatedTime: '3 min',
     capacity: 4,
-    features: ["AC", "WiFi", "Premium Interior"],
-    vehicleInfo: "BMW 3 Series 2022",
+    features: ['AC', 'WiFi', 'Premium Interior'],
+    vehicleInfo: 'BMW 3 Series 2022',
   },
   {
-    id: "3",
-    type: "Luxury",
+    id: '3',
+    type: 'Luxury',
     driver: {
-      name: "David Chen",
+      name: 'David Chen',
       rating: 4.9,
-      image: "/placeholder.svg",
+      image: '/placeholder.svg',
       trips: 543,
     },
     price: 35,
-    estimatedTime: "7 min",
+    estimatedTime: '7 min',
     capacity: 4,
-    features: ["AC", "WiFi", "Leather Seats", "Champagne"],
-    vehicleInfo: "Mercedes S-Class 2023",
+    features: ['AC', 'WiFi', 'Leather Seats', 'Champagne'],
+    vehicleInfo: 'Mercedes S-Class 2023',
   },
-];
+]
 
 const mockCarpoolRides = [
   {
-    id: "c1",
-    type: "Shared Ride",
+    id: 'c1',
+    type: 'Shared Ride',
     driver: {
-      name: "Mike Johnson",
+      name: 'Mike Johnson',
       rating: 4.7,
-      image: "/placeholder.svg",
+      image: '/placeholder.svg',
       trips: 324,
     },
     price: 6,
-    estimatedTime: "12 min",
+    estimatedTime: '12 min',
     capacity: 2,
     availableSeats: 2,
-    route: "Downtown → Airport",
-    savings: "Save $8 vs private ride",
+    route: 'Downtown → Airport',
+    savings: 'Save $8 vs private ride',
   },
   {
-    id: "c2",
-    type: "Shared Ride",
+    id: 'c2',
+    type: 'Shared Ride',
     driver: {
-      name: "Lisa Park",
+      name: 'Lisa Park',
       rating: 4.6,
-      image: "/placeholder.svg",
+      image: '/placeholder.svg',
       trips: 567,
     },
     price: 4,
-    estimatedTime: "15 min",
+    estimatedTime: '15 min',
     capacity: 3,
     availableSeats: 1,
-    route: "Mall → University",
-    savings: "Save $12 vs private ride",
+    route: 'Mall → University',
+    savings: 'Save $12 vs private ride',
   },
-];
+]
 
 export function BookingPanel() {
-  const router = useRouter();
-  const { user } = useAuth();
-  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
-  const [pickup, setPickup] = useState("Your current location");
-  const [destination, setDestination] = useState("");
-  const [activeTab, setActiveTab] = useState("ride");
-  const [isBooking, setIsBooking] = useState(false);
-  const [nearbyDrivers, setNearbyDrivers] = useState<any[]>([]);
-  const [isLoadingDrivers, setIsLoadingDrivers] = useState(false);
+  const router = useRouter()
+  const { user } = useAuth()
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null)
+  const [pickup, setPickup] = useState('Your current location')
+  const [destination, setDestination] = useState('')
+  const [activeTab, setActiveTab] = useState('ride')
+  const [isBooking, setIsBooking] = useState(false)
+  const [nearbyDrivers, setNearbyDrivers] = useState<any[]>([])
+  const [isLoadingDrivers, setIsLoadingDrivers] = useState(false)
 
   const handleBooking = async () => {
     if (!user) {
       toast({
-        title: "Authentication Required",
-        description: "Please sign in to book a ride.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Authentication Required',
+        description: 'Please sign in to book a ride.',
+        variant: 'destructive',
+      })
+      return
     }
 
     if (!destination.trim()) {
       toast({
-        title: "Destination Required",
-        description: "Please enter your destination.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Destination Required',
+        description: 'Please enter your destination.',
+        variant: 'destructive',
+      })
+      return
     }
 
-    if (activeTab === "ride" && !selectedVehicle) {
+    if (activeTab === 'ride' && !selectedVehicle) {
       toast({
-        title: "Vehicle Selection Required",
-        description: "Please select a vehicle.",
-        variant: "destructive",
-      });
-      return;
+        title: 'Vehicle Selection Required',
+        description: 'Please select a vehicle.',
+        variant: 'destructive',
+      })
+      return
     }
 
-    setIsBooking(true);
+    setIsBooking(true)
     try {
-      if (activeTab === "ride") {
+      if (activeTab === 'ride') {
         // Create ride request
         const selectedVehicleData = mockVehicles.find(
           (v) => v.id === selectedVehicle,
-        );
+        )
 
         const rideData = {
-          type: (selectedVehicleData?.type.toLowerCase() as any) || "regular",
+          type: (selectedVehicleData?.type.toLowerCase() as any) || 'regular',
           pickupAddress: pickup,
           pickupLatitude: 40.7128, // Demo coordinates - NYC
           pickupLongitude: -74.006,
@@ -162,34 +164,34 @@ export function BookingPanel() {
           destinationLongitude: -73.9851,
           estimatedPrice: selectedVehicleData?.price || 15,
           passengerCount: 1,
-        };
+        }
 
-        const ride = await ridesService.createRide(rideData);
+        const ride = await ridesService.createRide(rideData)
 
         toast({
-          title: "Ride Requested!",
-          description: "Looking for nearby drivers...",
-        });
+          title: 'Ride Requested!',
+          description: 'Looking for nearby drivers...',
+        })
 
         // Store ride ID for the booking page
-        localStorage.setItem("currentRideId", ride.id);
-        router.navigate({ to: "/booking" });
+        localStorage.setItem('currentRideId', ride.id)
+        router.navigate({ to: '/booking' })
       }
 
       // For now, other tabs will navigate to placeholder
       else {
-        router.navigate({ to: "/booking" });
+        router.navigate({ to: '/booking' })
       }
     } catch (error: any) {
       toast({
-        title: "Booking Failed",
-        description: error.message || "Unable to book ride. Please try again.",
-        variant: "destructive",
-      });
+        title: 'Booking Failed',
+        description: error.message || 'Unable to book ride. Please try again.',
+        variant: 'destructive',
+      })
     } finally {
-      setIsBooking(false);
+      setIsBooking(false)
     }
-  };
+  }
 
   return (
     <div className="w-full max-w-md bg-card rounded-t-3xl md:rounded-2xl shadow-2xl border border-border overflow-hidden">
@@ -278,7 +280,7 @@ export function BookingPanel() {
       {/* Service-specific content */}
       <div className="max-h-96 overflow-y-auto">
         <div className="p-4 space-y-3">
-          {activeTab === "ride" && (
+          {activeTab === 'ride' && (
             <>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium text-sm text-muted-foreground">
@@ -306,7 +308,7 @@ export function BookingPanel() {
             </>
           )}
 
-          {activeTab === "carpool" && (
+          {activeTab === 'carpool' && (
             <>
               <div className="mb-3">
                 <h3 className="font-medium text-sm text-muted-foreground mb-2">
@@ -326,8 +328,8 @@ export function BookingPanel() {
                   key={ride.id}
                   className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
                     selectedVehicle === ride.id
-                      ? "border-primary bg-primary/5 shadow-md"
-                      : "border-border bg-card hover:border-primary/50 hover:shadow-sm"
+                      ? 'border-primary bg-primary/5 shadow-md'
+                      : 'border-border bg-card hover:border-primary/50 hover:shadow-sm'
                   }`}
                   onClick={() => setSelectedVehicle(ride.id)}
                 >
@@ -355,7 +357,7 @@ export function BookingPanel() {
             </>
           )}
 
-          {activeTab === "delivery" && (
+          {activeTab === 'delivery' && (
             <>
               <h3 className="font-medium text-sm text-muted-foreground mb-3">
                 Package Options
@@ -398,7 +400,7 @@ export function BookingPanel() {
       </div>
 
       {/* Bottom actions */}
-      {(selectedVehicle || activeTab === "delivery") && (
+      {(selectedVehicle || activeTab === 'delivery') && (
         <div className="p-4 border-t border-border bg-muted/20">
           <Button
             className="w-full"
@@ -413,9 +415,9 @@ export function BookingPanel() {
               </>
             ) : (
               <>
-                {activeTab === "ride" && "Confirm Booking"}
-                {activeTab === "carpool" && "Join Shared Ride"}
-                {activeTab === "delivery" && "Schedule Delivery"}
+                {activeTab === 'ride' && 'Confirm Booking'}
+                {activeTab === 'carpool' && 'Join Shared Ride'}
+                {activeTab === 'delivery' && 'Schedule Delivery'}
               </>
             )}
           </Button>
@@ -428,5 +430,5 @@ export function BookingPanel() {
         </div>
       )}
     </div>
-  );
+  )
 }

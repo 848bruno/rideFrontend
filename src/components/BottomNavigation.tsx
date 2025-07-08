@@ -6,7 +6,7 @@ export function BottomNavigation() {
   const location = router.state.currentLocation;
 
   const navItems = [
-    { path: "/app", icon: Home, label: "Home" },
+    { path: "/index", icon: Home, label: "Home" },
     { path: "/booking", icon: Car, label: "Rides" },
     { path: "/delivery", icon: Package, label: "Delivery" },
     { path: "/drive", icon: MapPin, label: "Drive" },
